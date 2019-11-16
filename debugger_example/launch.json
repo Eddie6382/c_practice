@@ -1,0 +1,43 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch PA2 test",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/test",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for lldb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailers:": true,
+                }
+            ]
+        },
+        {
+            "name": "(gdb) Launch PA2 main",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/main",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for lldb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailers:": true,
+                }
+            ]
+        },
+    ]
+}
