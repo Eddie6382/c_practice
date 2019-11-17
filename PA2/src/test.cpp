@@ -60,6 +60,9 @@ public:
          }
       }
    }
+   void GenOneNode(int i, int j){
+      GenNodeData(i, j);
+   }
 
    void printNode(int i, int j)
    {
@@ -224,8 +227,8 @@ void PlanarSubset::read(const string &filename)
 
 int main()
 {
-   PlanarSubset a("../public_cases/12.in");
+   PlanarSubset a("../public_cases/100.in");
    a.GenMatrix();
-   a.printListNode();
+   a.printNode(0, 99);
    return 0;
 }

@@ -1,117 +1,254 @@
 #include <iostream>
-#include <vector>
-#include <list>
 #include <string>
+#include <fstream>
+#include <vector>
+#include <map>
+#include <iomanip>
+
 using namespace std;
+
+class Flag
+{
+   int a;
+   int b;
+};
 
 class datanode
 {
    friend class PlanarSubset;
-public:
-   datanode(){};
 private:
-   vector<vector<int>> _data;
-   void print(){
-      for (vector<vector<int>>::iterator it = _data.begin(); it != _data.end(); ++it){
-         for (vector<int>::iterator _it = (*it).begin(); _it != (*it).end(); ++_it)
-            cout << *_it << " ";
-         cout << endl;
-      }
-      
+   datanode(){};
+
+   void print()
+   {
+      if (!_data.empty())
+         for (vector<vector<int> >::iterator it = _data.begin(); it != _data.end(); ++it)
+         {
+            vector<int>::iterator _it = (*it).begin();
+            cout << "<" << *_it << ", " << *(_it+1) << ">  ";
+         }
    }
-   void addelem(vector<int> a){
-      _data.push_back(a);
-   }
+
+   vector<vector<int> > _data;
+   map<int, bool> flag;
 };
 
 class PlanarSubset
 {
 public:
-   PlanarSubset(){}
-   PlanarSubset(const string &filename){
+   PlanarSubset() {}
+   PlanarSubset(const string &filename)
+   {
       // todo, read file, so you can know number of node, which nodes are connected
       //int _nodeNumber = 12;
       //_coonectNode = ?;
+      read(filename);
+      IniMatrix();
    }
-   ~PlanarSubset(){}
-   void read(const string &filename){}  // read file
-   int MIS(int i, int j){
+   ~PlanarSubset() { 
+      for (int i = 0; i < _nodeNumber; ++i)
+         delete [] matrix[i];
+      delete [] matrix;
+      delete [] _connectNode;
+   }
+
+   void read( const string & ); // read file
+
+   void GenOneNode(int i, int j, vector<vector<int> > &ans){
+      GenNodeData(i, j);
+      cout << "node[" << i << "][" << j << "]:\n ";
+      for (int i = 0; i < _nodeNumber; ++i){
+         for (int j = i; j < _nodeNumber; ++j){
+            if (!matrix[i][j]._data.empty()){
+               for (int m = 0; m < matrix[i][j]._data.size(); m++)
+               {
+                  ans.push_back(matrix[i][j]._data[m]);
+                  matrix[i][j].print();
+               }
+            }
+         }
+      }
+      cout << "\n\nNumber of calls: " << count << endl;
+   }
+
+   void GenMatrix() { 
+      for (int i = 0; i < _nodeNumber; ++i){
+         for (int j = i; j < _nodeNumber; ++j){
+            GenNodeData(i, j);
+         }
+      }
+   }
+
+   void printNode(int i, int j)
+   {
+      cout << "node[" << i << "][" << j << "]:  ";
+      matrix[i][j].print();
+      cout << endl;
+   }
+
+   void printListNode()
+   {
+      for (int i = 0; i < _nodeNumber; ++i){
+         for (int j = i; j < _nodeNumber; ++j){
+            if ( !matrix[i][j]._data.empty() )
+               printNode(i, j);
+         }
+      }
+      cout << "number of calls: " << count << endl;
+   }
+
+   int MIS(int i, int j)
+   {
       size_t a;
       a = matrix[i][j]._data.size();
       return a;
    }
-   void printNodeChrods(int i, int j){ matrix[i][j].print(); }
-   
+
 private:
-   int _nodeNumber;                    // number of the node
-   vector<vector<int>> _connectNode;   // return all the connected node. ex: < <0,4>, <1,9>, .... >
-   datanode** matrix;
-   datanode init;
-   init._data = < <-1,-1> >;
+   int _nodeNumber;                  // number of the node
+   int* _connectNode;                // return all the connected node in a adjecent list
+   datanode **matrix;
+   int count = 0;                        // count the number of calls of GenNodeData;
+   
    void IniMatrix()
    {
-      matrix = new datanode* [_nodeNumber];
-      for(int i=0; i<_nodeNumber; ++i){
+      matrix = new datanode *[_nodeNumber];
+      for (int i = 0; i < _nodeNumber; ++i)
+      {
          matrix[i] = new datanode [_nodeNumber];
-         for(int j=i; j<_nodeNumber; ++j){
-            matrix[i][j] = init;
-         }
-      }
-   }
-   void IniMatrix()
-   {
-      matrix = new datanode* [_nodeNumber];
-      for(int i=0; i<_nodeNumber; ++i){
-         matrix[i] = new datanode [_nodeNumber];
-         for(int j=i; j<_nodeNumber; ++j){
-            matrix[i][j] = GenNodeData(i, j);
-         }
+         //for (int j = i; j < _nodeNumber; ++j)
+         //{
+            //matrix[i][j] = datanode();
+         //}
       }
    }
 
-   datanode GenNodeData(int i, int j)
+   void GenNodeData(int i, int j)
    {
-      datanode node;
-      datanode subnode;
-      int k;
-      for (int p = 0; p < _nodeNumber; p++){
-         for (int q = 0 ;q < 2 ; q++){
-            if (j == _connectNode[i][j] && j == 1){
-               k = _connectNode[i][j-1];
-            }
-            else if (j == _connectNode[i][j] && j == 0){
-               k = _connectNode[i][j+1];
-            }
-         }
-      }
-      if (k > j || k < i){
-         node = GenNodeData(i, j-1);
-      }
-      else if (k == i){
-         node = GenNodeData(i+1, j-1); 
-         node._data.push_back( <i,j> );
-      }
+      ++count;
+      //cout << "call GenNodeData(" << i << ", " << j << ")" << endl;
+      if ( i >= j ) {}
       else {
-         node = GenNodeData(i , k-1) ; 
-         subnode = GenNodeData(k +1, j-1);
-         for (int m = 0; m < subnode._data.size(); m++){
-            node._data.push_back(subnode._data[m]);
+         int k = _connectNode[j];
+         //cout << "(i, j, k) = " << "( " << i << ", " << j << ", " << k << " )" << endl;  
+
+         if (k > j || k < i)
+         {
+            if (matrix[i][j-1]._data.empty())
+               GenNodeData(i, j - 1);
+            else if ( matrix[i][j].flag.find(i*_nodeNumber + j-1) == matrix[i][j].flag.end() )
+            {
+               for (int m = 0; m < matrix[i][j-1]._data.size(); m++)
+               {
+                  matrix[i][j]._data.push_back(matrix[i][j-1]._data[m]);
+               }
+               //cout << "node[" << i << "][" << j << "] push back ";
+               //matrix[i][j].print(); cout << endl;
+               matrix[i][j].flag[i*_nodeNumber + j-1] = true;
+            }
          }
-         node._data.push_back( <k ,j> );
+         else if (k == i)
+         {
+            if ( matrix[i+1][j-1]._data.empty() )
+               GenNodeData(i + 1, j - 1);
+            else if (matrix[i][j].flag.find((i+1)*_nodeNumber + j-1) == matrix[i][j].flag.end())
+            {
+               for (int m = 0; m < matrix[i+1][j-1]._data.size(); m++)
+               {
+                  matrix[i][j]._data.push_back(matrix[i+1][j-1]._data[m]);
+               }
+               //cout << "node[" << i << "][" << j << "] push back ";
+               //matrix[i][j].print(); cout << endl;
+               matrix[i][j].flag[(i+1)*_nodeNumber + j-1] = true;
+            }
+            if ( matrix[i][j].flag.find(i*_nodeNumber + j) == matrix[i][j].flag.end() ){
+               vector<int> tmp;
+               tmp.push_back(i);
+               tmp.push_back(j);
+               matrix[i][j]._data.push_back(tmp);
+               //cout << "node[" << i << "][" << j << "] push back <" << i << ", " << j << ">\n";
+               matrix[i][j].flag[i*_nodeNumber + j] = true;
+            }
+         }
+         else
+         {
+            if (matrix[i][k-1]._data.empty())
+               GenNodeData(i, k - 1);
+            else if ( matrix[i][j].flag.find(i*_nodeNumber + k-1) == matrix[i][j].flag.end() )
+            {
+               for (int m = 0; m < matrix[i][k-1]._data.size(); m++)
+               {
+                  matrix[i][j]._data.push_back(matrix[i][k-1]._data[m]);
+               }
+               //cout << "node[" << i << "][" << j << "] push back ";
+               //matrix[i][j].print(); cout << endl;
+               matrix[i][j].flag[(i)*_nodeNumber + k-1] = true;
+            }
+            if (matrix[k+1][j-1]._data.empty())
+               GenNodeData(k + 1, j - 1);
+            else if ( matrix[i][j].flag.find((k+1)*_nodeNumber + j-1) == matrix[i][j].flag.end() )
+            {
+               for (int m = 0; m < matrix[k+1][j-1]._data.size(); m++)
+               {
+                  matrix[i][j]._data.push_back(matrix[k+1][j-1]._data[m]);
+               }
+               //cout << "node[" << i << "][" << j << "] push back ";
+               //matrix[i][j].print(); cout << endl;
+               matrix[i][j].flag[(k+1)*_nodeNumber + j-1] = true;
+            }
+            if ( matrix[i][j].flag.find(i*_nodeNumber + j) == matrix[i][j].flag.end() )
+            {
+               vector<int> tmp;
+               tmp.push_back(k);
+               tmp.push_back(j);
+               matrix[i][j]._data.push_back(tmp);
+               //cout << "node[" << i << "][" << j << "] push back <" << k << ", " << j << ">\n";
+               matrix[i][j].flag[i*_nodeNumber + j] = true;
+            }
+         }
       }
       // _data store the information of chrods
       // ex: (i,j)=(1,9) return node that node._data = <<1,9>, <2,6>>
       // todo
-      return node;
    }
 };
 
-int main()
-{  
-   PlanarSubset m;
-   cout << m.MIS(0 , _nodenumber - 1) << endl;
-   m.printNodeChrods(0, _nodenumber - 1);
-   return 0;
-
+void PlanarSubset::read(const string &filename)
+{
+   ifstream file;
+   file.open(filename, ios::in);
+   if (!file)
+   {
+      cerr << "file doesn't open" << endl;
+   }
+   file >> _nodeNumber;
+   cout << "successfully read \"" << filename << "\"" << "  nodeNumber: " << _nodeNumber << "\n\n";
+   _connectNode = new int [_nodeNumber];
+   for (int i = 0; i < _nodeNumber; ++i)
+      _connectNode[i] = -1; 
+   int a, b, pre_b;
+   while (!file.eof())
+   {
+      pre_b = b;
+      file >> a;
+      file >> b;
+      if (a!=0 || b!=pre_b){
+         _connectNode[b] = a;
+         _connectNode[a] = b;
+         cout << b << " -> " << a << "    " << a << " -> " << b << endl;
+      }
+      else
+         break;
+   }
+   cout << "\n\n";
 }
 
+int main()
+{
+   PlanarSubset a("../public_cases/20000.in");
+   vector<vector<int> > ans;
+   //a.GenOneNode(0, 99, ans);
+   //a.GenMatrix();
+   //a.printListNode();
+   return 0;
+}
