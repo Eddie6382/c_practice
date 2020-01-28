@@ -30,15 +30,17 @@ void ShowMatrix(int* matrix, int m, int n, int sub_m1, int sub_m2, int sub_n1, i
 int MaxSum(int* matrix, const int ROW, const int COL, int& sub_row1, int& sub_row2, int& sub_col1, int& sub_col2)
 {
 	int global_max = INT8_MIN;
-	vector<int> row_array(ROW, 0);
-    vector<int> local_max(ROW, 0);
-    vector<int> local_row1(ROW, 0);
     for (int l_col = 0; l_col < COL; ++l_col)
         for (int r_col = l_col; r_col < COL; ++r_col) 
         {
-            for (int idx = 0; idx < ROW; ++idx)
+            vector<int> row_array(ROW, 0);
+            vector<int> local_max(ROW, 0);
+            vector<int> local_row1(ROW, 0);
+            for (int idx = 0; idx < ROW; ++idx) {
                 for (int j = l_col; j <= r_col; ++j)
                     row_array[idx] +=  matrix[idx*COL + j];
+            }
+
             local_max[0] = row_array[0];
             for (int idx = 1; idx < ROW; ++idx) {
                 local_max[idx] = max(row_array[idx], row_array[idx] + local_max[idx-1]);
