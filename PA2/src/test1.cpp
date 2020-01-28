@@ -94,9 +94,7 @@ private:
       ++count;
       //cout << "call GenNodeData ( " << i << ", " << j << " , vector)\n";
       if ( matrix.find(i*_nodeNumber+j) != matrix.end() ){
-         for (int m = 0; m < matrix[i*_nodeNumber+j]._data.size(); ++i)
-            ans.push_back(matrix[i*_nodeNumber+j]._data[m]);
-         matrix[i*_nodeNumber+j].flag[i*_nodeNumber + j] = true;
+         ans = matrix[i*_nodeNumber+j]._data;
          return ans.size();
       }
       
@@ -112,28 +110,24 @@ private:
                matrix[i*_nodeNumber+j]._data = ans;
                matrix[i*_nodeNumber+j].flag[i*_nodeNumber + j-1] = true;
             }
-            
-            else if (matrix[i*_nodeNumber+j].flag.find(i*_nodeNumber + j-1) == matrix[i*_nodeNumber+j].flag.end())
-            {
-               ans = matrix[i*_nodeNumber+j]._data = matrix[i*_nodeNumber+j-1]._data;
+            else if (matrix[i*_nodeNumber+j].flag.find(i*_nodeNumber + j-1) == matrix[i*_nodeNumber+j].flag.end()) {}
+            else{
+               matrix[i*_nodeNumber+j]._data = matrix[i*_nodeNumber+j-1]._data;
                matrix[i*_nodeNumber+j].flag[i*_nodeNumber + j-1] = true;
             }
-            
          }
          else if (k == i)
          {
             if ( matrix.find((i+1)*_nodeNumber+j-1) == matrix.end() ){
-               vector<vector<int> > ans_1;
-               GenNodeData(i + 1, j - 1, ans_1);
-               ans = matrix[i*_nodeNumber+j]._data = ans_1;
+               GenNodeData(i + 1, j - 1, ans);
+               matrix[i*_nodeNumber+j]._data = ans;
                matrix[i*_nodeNumber+j].flag[(i+1)*_nodeNumber + j-1] = true;
             }
-            else if (matrix[i*_nodeNumber+j].flag.find((i+1)*_nodeNumber + j-1) == matrix[i*_nodeNumber+j].flag.end()) 
-            {
+            else if (matrix[i*_nodeNumber+j].flag.find((i+1)*_nodeNumber + j-1) == matrix[i*_nodeNumber+j].flag.end()) {}
+            else {
                ans = matrix[i*_nodeNumber+j]._data = matrix[(i+1)*_nodeNumber+j-1]._data;
                matrix[i*_nodeNumber+j].flag[(i+1)*_nodeNumber + j-1] = true;
             }
-            
             if ( matrix[i*_nodeNumber+j].flag.find(i*_nodeNumber + j) == matrix[i*_nodeNumber+j].flag.end() ){
                matrix[i*_nodeNumber+j] = datanode();
                vector<int> tmp;
@@ -141,6 +135,7 @@ private:
                tmp.push_back(j);
                matrix[i*_nodeNumber+j]._data.push_back(tmp);
                //cout << "node[" << i << "][" << j << "] push back <" << i << ", " << j << ">\n";
+               matrix[i*_nodeNumber+j].flag[i*_nodeNumber + j] = true;
                ans = matrix[i*_nodeNumber+j]._data;
             }
          }
@@ -148,14 +143,11 @@ private:
          {
             vector<vector<int> > ans_1;
             vector<vector<int> > ans_2;
-            vector<vector<int> > ans_3;
             GenNodeData(i, k-1, ans_1);
-            GenNodeData(k+1, j-1, ans_2);
-            GenNodeData(i, j-1, ans_3);
-            if ( ans_1.size() + ans_2.size() + 1 > ans_2.size() ){
+            GenNodeData(k+1, j-1, ans_1);
+            GenNodeData(i, j-1, ans_2);
+            if ( ans_1.size() + 1 > ans_2.size() ){
                matrix[i*_nodeNumber+j]._data = ans_1;
-               for (int m = 0; m < ans_2.size(); ++i)
-                  matrix[i*_nodeNumber+j]._data.push_back(ans_2[m]);
                vector<int> tmp;
                tmp.push_back(k);
                tmp.push_back(j);
@@ -163,10 +155,10 @@ private:
                ans = matrix[i*_nodeNumber+j]._data;
             }
             else{
-               ans = matrix[i*_nodeNumber+j]._data = ans_3;
+               ans = matrix[i*_nodeNumber+j]._data = ans_2;
             } 
+            matrix[i*_nodeNumber+j].flag[i*_nodeNumber + j] = true;
          }
-         matrix[i*_nodeNumber+j].flag[i*_nodeNumber + j] = true;
          return ans.size();
          // _data store the information of chrods
          // ex: (i,j)=(1,9) return node that node._data = <<1,9>, <2,6>>
@@ -207,9 +199,9 @@ void PlanarSubset::read(const string &filename)
 
 int main()
 {
-   PlanarSubset a("../public_cases/12.in");
+   PlanarSubset a("../public_cases/100.in");
    vector<vector<int> > ans;
-   a.GenOneNode(0, 11 , ans);
+   a.GenOneNode(0, 99 , ans);
    a.printListNode();
    cout << ans.size() << "\n\n";
    for( vector<vector<int> >::iterator it = ans.begin(); it != ans.end(); ++it )

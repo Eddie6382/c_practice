@@ -6,17 +6,21 @@
 using namespace std;
 
 template <typename NODETYPE>
-class List{
+class List
+{
 public:
-    List():firstptr(nullptr), lastptr(nullptr){};
-    ~List(){
-        if( !isEmpty() ){
+    List() : firstptr(nullptr), lastptr(nullptr){};
+    ~List()
+    {
+        if (!isEmpty())
+        {
             cout << "Destorying nodes......" << endl;
 
             ListNode<NODETYPE> *currrentptr = firstptr;
-            ListNode<NODETYPE> &tempptr = nullptr;
+            ListNode<NODETYPE> *tempptr = nullptr;
 
-            while( currrentptr != nullptr ){
+            while (currrentptr != nullptr)
+            {
                 tempptr = currrentptr;
                 cout << tempptr->getData() << "\n";
                 currrentptr = currrentptr->nextptr;
@@ -24,13 +28,12 @@ public:
             }
         }
     }
-    void insertFront( const NODETYPE & );
-    void insertBack( const NODETYPE & );
-    bool removeFront( NODETYPE & );
-    bool removeBack( NODETYPE & );
+    void insertFront(const NODETYPE &);
+    void insertBack(const NODETYPE &);
+    bool removeFront(NODETYPE &);
+    bool removeBack(NODETYPE &);
     bool isEmpty() const;
     void print() const;
-
 
 private:
     // pounters to the first or the end of the list
@@ -38,16 +41,19 @@ private:
     ListNode<NODETYPE> *lastptr;
 
     // to allocate new node, view NODETYPE as a type
-    ListNode<NODETYPE> *getNewNode( const NODETYPE &value ){
+    ListNode<NODETYPE> *getNewNode(const NODETYPE &value)
+    {
         return new ListNode<NODETYPE>(value);
     }
 };
 
 template <typename NODETYPE>
-void List<NODETYPE>::insertFront( const NODETYPE &value ){
-    List <NODETYPE> *newPtr = getNewNode( value );
+void List<NODETYPE>::insertFront(const NODETYPE &value)
+{
+    ListNode<NODETYPE> *newPtr = getNewNode(value);
 
-    if(isEmpty()){
+    if (isEmpty())
+    {
         firstptr = lastptr = newPtr;
     }
     else // list id not empty
@@ -58,30 +64,35 @@ void List<NODETYPE>::insertFront( const NODETYPE &value ){
 }
 
 template <typename NODETYPE>
-void List<NODETYPE>::insertBack( const NODETYPE &value ){
-    List<NODETYPE> *newPtr = getNewNode( value );
+void List<NODETYPE>::insertBack(const NODETYPE &value)
+{
+    ListNode<NODETYPE> *newPtr = getNewNode(value);
 
-    if( isEmpty() ){
+    if (isEmpty())
+    {
         firstptr = lastptr = newPtr;
     }
-    else{
+    else
+    {
         lastptr->nextptr = newPtr;
         lastptr = newPtr;
     }
 }
 
-template <typename NODETYPE>
-bool List<NODETYPE>::removeFront( NODETYPE &value ){
-    if( isEmpty() )
+template <typename NODETYPE> // pass by white paper
+bool List<NODETYPE>::removeFront(NODETYPE &value)
+{
+    if (isEmpty())
         return false;
-    else{
+    else
+    {
         ListNode<NODETYPE> *tempptr = firstptr;
-        if( firstptr == lastptr)
+        if (firstptr == lastptr)
             firstptr = lastptr = nullptr;
         else
             firstptr = firstptr->nextptr;
 
-        value = tempptr->data;     //return data being removed
+        value = tempptr->data; //return data being removed
         delete tempptr;
         return true;
     }
@@ -89,18 +100,22 @@ bool List<NODETYPE>::removeFront( NODETYPE &value ){
 
 // it is hard to find last node
 template <typename NODETYPE>
-bool List<NODETYPE>::removeBack( NODETYPE &value ){
-    if( isEmpty() )
+bool List<NODETYPE>::removeBack(NODETYPE &value)
+{
+    if (isEmpty())
         return false;
-    else{
+    else
+    {
         ListNode<NODETYPE> *tempptr = lastptr;
 
-        if( firstptr == lastptr )
+        if (firstptr == lastptr)
             firstptr = lastptr = nullptr;
-        else{
+        else
+        {
             ListNode<NODETYPE> *currentPtr = firstptr;
 
-            while( currentPtr->nextptr != lastptr ){
+            while (currentPtr->nextptr != lastptr)
+            {
                 currentPtr = currentPtr->nextptr;
             }
             lastptr = currentPtr;
@@ -114,20 +129,24 @@ bool List<NODETYPE>::removeBack( NODETYPE &value ){
 }
 
 template <typename NODETYPE>
-bool List<NODETYPE>::isEmpty() const{
+bool List<NODETYPE>::isEmpty() const
+{
     return firstptr == nullptr;
 }
 
 template <typename NODETYPE>
-void List<NODETYPE>::print() const{
-    if( isEmpty() ){
+void List<NODETYPE>::print() const
+{
+    if (isEmpty())
+    {
         cout << "The list is empty\n\n";
         return;
     }
 
     ListNode<NODETYPE> *currentPtr = firstptr;
 
-    while( currentPtr != nullptr ){
+    while (currentPtr != nullptr)
+    {
         cout << currentPtr->data << ' ';
         currentPtr = currentPtr->nextptr;
     }

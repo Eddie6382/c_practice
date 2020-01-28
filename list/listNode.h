@@ -1,17 +1,21 @@
 #ifndef LISTNODE_H
 #define LISTNODE_H
 
-template< typename NODETYPE > class List;
+template <typename NODETYPE>
+class List;
 
-template< typename NODETYPE > class ListNode
+template <typename NODETYPE>
+class ListNode
 {
-    friend class List<NODETYPE>;   //make list a friend
+    friend class List<NODETYPE>; //make list a friend
 public:
     // explicit: can not change the type implicitly
-    explicit ListNode( const NODETYPE &info ): data( info ), nextPtr(nullptr){};
-    NODETYPE getData() const{
+    explicit ListNode(const NODETYPE &info) : data(info), nextptr(nullptr){};
+    NODETYPE getData() const
+    {
         return data;
     }
+
 private:
     NODETYPE data;
     ListNode<NODETYPE> *nextptr;
